@@ -7,8 +7,8 @@ This project processes customer support transcripts to identify and file bug rep
 ### 1. Clone the repository
 First, clone the repository to your local machine:
 ```bash
-git clone <repository_url>
-cd <repository_directory>
+git clone https://github.com/jerrychangusa/IssueAnalyzer
+cd IssueAnalyzer
 ```
 
 ### 2. Install dependencies
