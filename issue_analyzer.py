@@ -24,12 +24,12 @@ class IssueAnalyzer:
 
         Instructions:
         1. Carefully read and analyze the provided transcript.
-        2. Identify any mentions of bugs (problems or unexpected behaviors) or feature requests (desired new functionalities or improvements) that have not been resolved.
+        2. Identify any mentions of unresolved bugs (problems or unexpected behaviors) or feature requests (desired new functionalities or improvements).
         3. For each issue identified:
            a. Create a concise title that summarizes the issue.
            b. Write a detailed description of the issue.
            c. Determine whether it's a bug or a feature request.
-           d. Assign a priority level (0-4) to the issue where 0 is no poriority, 1 is Urgent, 2 is High, 3 is Medium, and 4 is Low.
+           d. Assign a priority level (0-4) to the issue where 0 is no priority, 1 is Urgent, 2 is High, 3 is Medium, and 4 is Low.
 
         Output Format:
         - For each issue found, provide the structured information as described above.
@@ -41,7 +41,7 @@ class IssueAnalyzer:
         - For bugs, include steps to reproduce if mentioned in the transcript.
         - For feature requests, explain the user's motivation or the problem they're trying to solve.
         - Consider the context and prioritize issues that seem most impactful or frequently mentioned.
-
+        
         Please analyze the transcript and provide structured descriptions of any issues you identify.
         """
 

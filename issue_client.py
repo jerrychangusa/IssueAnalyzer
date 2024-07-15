@@ -1,15 +1,10 @@
 import os
-from typing import List
+from typing import Dict, List
 
 from gql import Client, gql
 from gql.transport.aiohttp import AIOHTTPTransport
 
 from issue import Comment, Issue, IssueContent, Label
-
-LABEL_TO_LINEAR_ID_MAP = {
-    Label.BUG: '83f21759-814f-409d-9f21-93e3b37271a9',
-    Label.FEATURE: 'b476cf81-b28d-456a-b507-435ed225b601'
-}
 
 
 def create_linear_client() -> Client:
@@ -38,12 +33,39 @@ def fetch_default_team_id(client: Client) -> str | None:
     return team_ids[0] if team_ids else None
 
 
+def query_label_ids(team_id: str, client: Client) -> Dict[Label, str]:
+    query = gql("""
+                query GetLabels($teamId: String!) {
+                    team(id: $teamId) {
+                        labels {
+                            nodes {
+                                id
+                                name
+                            }
+                        }
+                    }
+                }
+                """)
+    variables = {"teamId": team_id}
+    result = client.execute(query, variable_values=variables)
+    nodes = result['team']['labels']['nodes']
+    label_id_map = {}
+    for node in nodes:
+        if node['name'] == 'Bug':
+            label_id_map[Label.BUG] = node['id']
+        elif node['name'] == 'Feature':
+            label_id_map[Label.FEATURE] = node['id']
+    return label_id_map
+
+
 class IssueClient:
     """A class to manage issues using the Linear API."""
 
     def __init__(self):
         self.client = create_linear_client()
         self.team_id = fetch_default_team_id(self.client)
+        self.label_id_map = query_label_ids(
+            self.team_id, self.client) if self.team_id else {}
 
     def create_issue(self, content: IssueContent) -> bool:
         """Creates a new issue
@@ -66,12 +88,16 @@ class IssueClient:
             }
         }
         """)
+        label_ids = []
+        if content.label in self.label_id_map:
+            label_ids.append(self.label_id_map[content.label])
+
         variables = {
             "input": {
                 "teamId": self.team_id,
                 "title": content.title,
                 "description": content.description,
-                "labelIds": [LABEL_TO_LINEAR_ID_MAP[content.label]],
+                "labelIds": label_ids,
                 "priority": content.priority
             }
         }
@@ -137,7 +163,7 @@ class IssueClient:
         for node in result['issues']['nodes']:
             label_ids = [
                 label['id'] for label in node['labels']['nodes']
-                if label['id'] in LABEL_TO_LINEAR_ID_MAP.values()
+                if label['id'] in self.label_id_map.values()
             ]
             if len(label_ids) > 1:
                 raise ValueError(
@@ -145,7 +171,7 @@ class IssueClient:
                     f"for issue {node['id']}: {label_ids}")
 
             if len(label_ids) == 1:
-                for label, label_id in LABEL_TO_LINEAR_ID_MAP.items():
+                for label, label_id in self.label_id_map.items():
                     if label_id == label_ids[0]:
                         issues.append(
                             Issue(id=node['id'],
