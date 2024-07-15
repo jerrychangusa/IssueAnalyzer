@@ -12,6 +12,7 @@ This project uses Python and requires some specific libraries. You can install t
 
 ```
 pip install openai
+pip install "gql[all]"
 ```
 
 ### 3. Set up environment variables
