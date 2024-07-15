@@ -9,10 +9,10 @@ from issue import Comment, Issue, IssueContent, Label
 
 def create_linear_client() -> Client:
     headers = {
-        "Content-Type": "application/json",
-        "Authorization": os.environ['LINEAR_API_KEY'],
+        'Content-Type': 'application/json',
+        'Authorization': os.environ['LINEAR_API_KEY'],
     }
-    transport = AIOHTTPTransport(url="https://api.linear.app/graphql",
+    transport = AIOHTTPTransport(url='https://api.linear.app/graphql',
                                  headers=headers)
     return Client(transport=transport, fetch_schema_from_transport=True)
 
@@ -93,12 +93,12 @@ class IssueClient:
             label_ids.append(self.label_id_map[content.label])
 
         variables = {
-            "input": {
-                "teamId": self.team_id,
-                "title": content.title,
-                "description": content.description,
-                "labelIds": label_ids,
-                "priority": content.priority
+            'input': {
+                'teamId': self.team_id,
+                'title': content.title,
+                'description': content.description,
+                'labelIds': label_ids,
+                'priority': content.priority
             }
         }
         result = self.client.execute(query, variable_values=variables)
@@ -126,9 +126,9 @@ class IssueClient:
         }
         """)
         variables = {
-            "input": {
-                "issueId": comment.issue_id,
-                "body": comment.comment
+            'input': {
+                'issueId': comment.issue_id,
+                'body': comment.comment
             }
         }
         result = self.client.execute(query, variable_values=variables)

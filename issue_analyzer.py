@@ -11,7 +11,7 @@ import tools
 class IssueAnalyzer:
     """A class to manage issue detection and similarity checking."""
 
-    def __init__(self, model: str = "gpt-4o"):
+    def __init__(self, model: str = 'gpt-4o'):
         self.client = OpenAI()
         self.model = model
 
@@ -71,16 +71,16 @@ class IssueAnalyzer:
     def _get_tool_calls(self, prompt: str,
                         tool: Dict[str, Any]) -> List[Any] | None:
         """Returns ChatCompletionMessageToolCall objects for the given prompt and tool."""
-        messages = [{"role": "user", "content": prompt}]
+        messages = [{'role': 'user', 'content': prompt}]
 
         response = self.client.chat.completions.create(
-            model="gpt-4o",
+            model='gpt-4o',
             messages=messages,
             tools=[tool],
-            tool_choice="auto",
+            tool_choice='auto',
         )
         if not response.choices or not response.choices[0].message:
-            logging.error("No response from GPT-4")
+            logging.error('No response from GPT-4')
             return None
 
         return response.choices[0].message.tool_calls
@@ -98,20 +98,20 @@ class IssueAnalyzer:
             self._detect_issues_prompt(transcript),
             tool=tools.CREATE_ISSUE_TOOL)
         if not tool_calls:
-            logging.info("No tool calls found in detect_issues response.")
+            logging.info('No tool calls found in detect_issues response.')
             return []
 
         issues = []
         for tool_call in tool_calls:
-            if tool_call.type == "function" and tool_call.function.name == "create_issue":
+            if tool_call.type == 'function' and tool_call.function.name == 'create_issue':
                 arguments = json.loads(tool_call.function.arguments)
                 label = Label.BUG if arguments[
-                    "label"] == "bug" else Label.FEATURE
+                    'label'] == 'bug' else Label.FEATURE
                 issues.append(
-                    IssueContent(title=arguments["title"],
-                                 description=arguments["description"],
+                    IssueContent(title=arguments['title'],
+                                 description=arguments['description'],
                                  label=label,
-                                 priority=arguments["priority"]))
+                                 priority=arguments['priority']))
         return issues
 
     def find_and_comment_on_similar_issues(
@@ -130,14 +130,14 @@ class IssueAnalyzer:
                                           tool=tools.ADD_COMMENT_TOOL)
 
         if not tool_calls:
-            logging.info("No tool calls found in find_and_comment response.")
+            logging.info('No tool calls found in find_and_comment response.')
             return []
 
         comments = []
         for tool_call in tool_calls:
-            if tool_call.type == "function" and tool_call.function.name == "add_comment":
+            if tool_call.type == 'function' and tool_call.function.name == 'add_comment':
                 arguments = json.loads(tool_call.function.arguments)
                 comments.append(
-                    Comment(issue_id=arguments["issue_id"],
-                            comment=arguments["comment"]))
+                    Comment(issue_id=arguments['issue_id'],
+                            comment=arguments['comment']))
         return comments

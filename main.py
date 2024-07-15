@@ -33,25 +33,25 @@ def process_transcript(transcript: str) -> Dict[str, int]:
                 is_success = client.add_comment(comment)
 
                 if not is_success:
-                    result["add_comment_errors"] += 1
-                    logging.error(f"Failed to add comment {comment}")
+                    result['add_comment_errors'] += 1
+                    logging.error(f'Failed to add comment {comment}')
                 else:
-                    result["added_comments"] += 1
-                    logging.info(f"Added comment {comment}")
+                    result['added_comments'] += 1
+                    logging.info(f'Added comment {comment}')
 
         else:
             is_success = client.create_issue(new_issue)
 
             if not is_success:
-                result["new_issue_errors"] += 1
-                logging.error(f"Failed to create issue {new_issue}")
+                result['new_issue_errors'] += 1
+                logging.error(f'Failed to create issue {new_issue}')
             else:
                 if new_issue.label == Label.BUG:
-                    result["bug_created"] += 1
-                    logging.info(f"Created bug {new_issue}")
+                    result['bug_created'] += 1
+                    logging.info(f'Created bug {new_issue}')
                 else:
-                    result["feature_request_created"] += 1
-                    logging.info(f"Created feature request {new_issue}")
+                    result['feature_request_created'] += 1
+                    logging.info(f'Created feature request {new_issue}')
 
     return result
 
@@ -59,11 +59,11 @@ def process_transcript(transcript: str) -> Dict[str, int]:
 def main():
     # Processes synthetic customer support transcripts.
     for name, transcript in all_transcripts.transcript_registry.items():
-        print(f"Processing transcript: {name}")
+        print(f'Processing transcript: {name}')
         result = process_transcript(transcript)
         for key, val in result.items():
-            print(f"{key}: {val}")
+            print(f'{key}: {val}')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
